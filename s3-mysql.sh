@@ -11,17 +11,8 @@
 # Note: The files will be uploaded to the following constructed path on S3
 #   s3://bucket/database/mysql/2017/03/15/1489558714-database.sql.gz
 
-# configurable variables
-MYSQL_HOST=127.0.0.1
-MYSQL_PORT=3306
-MYSQL_USER=****
-MYSQL_PASS=****
-S3_BUCKET_NAME=****
-S3_BACKUP_TYPE=database/mysql
-
-# binary file paths
-MYSQL_BIN=/usr/bin/mysql
-MYSQL_DMP=/usr/bin/mysqldump
+# import config
+source $(dirname "${BASH_SOURCE[0]}")/configs/mysql
 
 # timestamp breakdown path
 TIMESTAMP=$(date +"%Y/%m/%d/%s")

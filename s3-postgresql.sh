@@ -11,17 +11,8 @@
 # Note: The files will be uploaded to the following constructed path on S3
 #   s3://bucket/database/postgres/2017/03/15/1489558714-database.sqlc
 
-# configurable variables
-POSTGRES_HOST=127.0.0.1
-POSTGRES_PORT=5432
-POSTGRES_USER=****
-POSTGRES_PASS=****
-S3_BUCKET_NAME=****
-S3_BACKUP_TYPE=database/postgres
-
-# binary file paths
-PSQL_BIN=/usr/bin/psql
-PSQL_DMP=/usr/bin/pg_dump
+# import config
+source $(dirname "${BASH_SOURCE[0]}")/configs/postgres
 
 # export password
 export PGPASSWORD=${POSTGRES_PASS}

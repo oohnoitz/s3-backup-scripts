@@ -1,0 +1,11 @@
+# configurable variables
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+POSTGRES_USER=****
+POSTGRES_PASS=****
+S3_BUCKET_NAME=****
+S3_BACKUP_TYPE=database/postgres
+
+# binary file paths
+PSQL_BIN=/usr/bin/psql
+PSQL_DMP=/usr/bin/pg_dump

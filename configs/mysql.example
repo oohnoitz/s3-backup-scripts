@@ -1,0 +1,11 @@
+# configurable variables
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_USER=****
+MYSQL_PASS=****
+S3_BUCKET_NAME=****
+S3_BACKUP_TYPE=database/mysql
+
+# binary file paths
+MYSQL_BIN=/usr/bin/mysql
+MYSQL_DMP=/usr/bin/mysqldump
