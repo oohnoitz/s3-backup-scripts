@@ -32,6 +32,6 @@ DATABASES=`${MYSQL_BIN} -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USER} -p${M
 # process each database for backup
 echo "Uploading Compressed Backups..."
 for DATABASE in ${DATABASES}; do
-  ${MYSQL_DMP} --default-character-set=utf8mb4 --quick -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD} --databases ${DATABASE} | gzip -9 | s3cmd put - s3://${S3_BUCKET_NAME}/${S3_BACKUP_TYPE}/${TIMESTAMP}-${DATABASE}.sql.gz
+  ${MYSQL_DMP} --default-character-set=utf8mb4 --quick -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USER} -p${MYSQL_PASS} --databases ${DATABASE} | gzip -9 | s3cmd put - s3://${S3_BUCKET_NAME}/${S3_BACKUP_TYPE}/${TIMESTAMP}-${DATABASE}.sql.gz
 done
 echo "Done!"
