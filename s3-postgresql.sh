@@ -18,7 +18,8 @@ source $(dirname "${BASH_SOURCE[0]}")/configs/postgres
 export PGPASSWORD=${POSTGRES_PASS}
 
 # timestamp breakdown path
-TIMESTAMP=$(date +"%Y/%m/%d/%s")
+DATESTAMP=$(date +"%s")
+TIMESTAMP=$(date +"%Y/%m/%d")/${DATESTAMP}
 
 # fetch name of each database for individual backup
 DATABASES=`${PSQL_BIN} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER} -c "SELECT datname FROM pg_database WHERE NOT datistemplate" -tA | grep -Ev "(postgres)"`
@@ -27,13 +28,13 @@ DATABASES=`${PSQL_BIN} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USE
 echo "Uploading Compressed Backups..."
 for DATABASE in ${DATABASES}; do
   # dump database to disk
-  ${PSQL_DMP} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER} --format=c -f /tmp/${TIMESTAMP}-${DATABASE}.sqlc ${DATABASE}
+  ${PSQL_DMP} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER} --format=c -f /tmp/${DATESTAMP}-${DATABASE}.sqlc ${DATABASE}
 
   # upload database
-  s3cmd put -f /tmp/${TIMESTAMP}-${DATABASE}.sqlc s3://${S3_BUCKET_NAME}/${S3_BACKUP_TYPE}/${TIMESTAMP}-${DATABASE}.sqlc
+  s3cmd put -f /tmp/${DATESTAMP}-${DATABASE}.sqlc s3://${S3_BUCKET_NAME}/${S3_BACKUP_TYPE}/${TIMESTAMP}-${DATABASE}.sqlc
 
   # remove local dump
-  rm /tmp/${TIMESTAMP}-${DATABASE}.sqlc
+  rm /tmp/${DATESTAMP}-${DATABASE}.sqlc
 done
 echo "Done!"
 

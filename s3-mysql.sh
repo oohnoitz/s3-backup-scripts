@@ -15,7 +15,8 @@
 source $(dirname "${BASH_SOURCE[0]}")/configs/mysql
 
 # timestamp breakdown path
-TIMESTAMP=$(date +"%Y/%m/%d/%s")
+DATESTAMP=$(date +"%s")
+TIMESTAMP=$(date +"%Y/%m/%d")/${DATESTAMP}
 
 # fetch name of each database for individual backup
 DATABASES=`${MYSQL_BIN} -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USER} -p${MYSQL_PASS} -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema|mysql|performance_schema)"`
@@ -24,12 +25,12 @@ DATABASES=`${MYSQL_BIN} -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USER} -p${M
 echo "Uploading Compressed Backups..."
 for DATABASE in ${DATABASES}; do
   # dump database to disk
-  ${MYSQL_DMP} --default-character-set=utf8mb4 --quick -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USER} -p${MYSQL_PASS} --databases ${DATABASE} | gzip -9 > /tmp/${TIMESTAMP}-${DATABASE}.sql.gz
+  ${MYSQL_DMP} --default-character-set=utf8mb4 --quick -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USER} -p${MYSQL_PASS} --databases ${DATABASE} | gzip -9 > /tmp/${DATESTAMP}-${DATABASE}.sql.gz
 
   # upload database
-  s3cmd put -f /tmp/${TIMESTAMP}-${DATABASE}.sql.gz s3://${S3_BUCKET_NAME}/${S3_BACKUP_TYPE}/${TIMESTAMP}-${DATABASE}.sql.gz
+  s3cmd put -f /tmp/${DATESTAMP}-${DATABASE}.sql.gz s3://${S3_BUCKET_NAME}/${S3_BACKUP_TYPE}/${TIMESTAMP}-${DATABASE}.sql.gz
 
   # remove local dump
-  rm /tmp/${TIMESTAMP}-${DATABASE}.sql.gz
+  rm /tmp/${DATESTAMP}-${DATABASE}.sql.gz
 done
 echo "Done!"
