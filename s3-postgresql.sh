@@ -5,8 +5,8 @@
 # This script performs the following task:
 # - obtains a list of databases on the specified server
 # - iterates through list to perform a database dump
-# - pipes the dump into gzip for compression
-# - pipes the compressed file to s3
+# - uploads to s3
+# - cleans up local database dumnps
 #
 # Note: The files will be uploaded to the following constructed path on S3
 #   s3://bucket/database/postgres/2017/03/15/1489558714-database.sqlc
@@ -26,7 +26,14 @@ DATABASES=`${PSQL_BIN} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USE
 # process each database for backup
 echo "Uploading Compressed Backups..."
 for DATABASE in ${DATABASES}; do
-  ${PSQL_DMP} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER} --format=c ${DATABASE} | s3cmd put - s3://${S3_BUCKET_NAME}/${S3_BACKUP_TYPE}/${TIMESTAMP}-${DATABASE}.sqlc
+  # dump database to disk
+  ${PSQL_DMP} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER} --format=c -f /tmp/${TIMESTAMP}-${DATABASE}.sqlc ${DATABASE}
+
+  # upload database
+  s3cmd put -f /tmp/${TIMESTAMP}-${DATABASE}.sqlc s3://${S3_BUCKET_NAME}/${S3_BACKUP_TYPE}/${TIMESTAMP}-${DATABASE}.sqlc
+
+  # remove local dump
+  rm /tmp/${TIMESTAMP}-${DATABASE}.sqlc
 done
 echo "Done!"
 
